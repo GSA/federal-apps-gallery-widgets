@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * A module that will let Drupal pull in and display applications from apps.usa.gov
+ */
+
+function appsgal_rotator_uninstall() {
+  variable_del('appsgal_rotator_defaults');
+}
+
+function appsgal_rotator_schema() {
+  $schema['appsgal_rotator'] = array(
+    'description' => 'Table for the AppsGallery rotator module.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'ID associated with rotator',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+
+       'rotator_name' => array(
+        'description' => 'Name of rotator',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => ''),
+
+       'active' => array(
+        'description' => 'Active or deactivated',
+        'type' => 'int',
+        'length' => 1,
+        'not null' => TRUE,
+        ),
+     ),
+ 
+     'primary key' => array('id'));
+ 
+     return $schema;
+}
+
+function appsgal_rotator_install() {
+  //$this->drupalLogin($this->web_user);
+  variable_set('appsgal_rotator_defaults', appsgal_rotator_defaults());
+  db_insert('appsgal_rotator')
+          ->fields(array(
+            'rotator_name' => 'appsgal_rotator_defaults',
+            'active' => 1,
+          ))
+          ->execute();
+}
+
+?>

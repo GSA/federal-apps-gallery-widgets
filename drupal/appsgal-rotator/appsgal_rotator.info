@@ -1,0 +1,5 @@
+name = AppsGallery Rotator
+description = A module that will let the users pull in and display applications from apps.usa.gov
+configure = admin/config/system/appsgal_rotator
+core = 7.x
+stylesheets[all][] = appstyle.css

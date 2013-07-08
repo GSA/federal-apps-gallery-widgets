@@ -1,0 +1,818 @@
+<?php
+
+/**
+ * A module that will let Drupal pull in and display applications from apps.usa.gov
+ */
+
+function appsgal_rotator_help($path, $arg) {
+
+  switch ($path) {
+    case "admin/help#appsgal_rotator":
+      return '<p>' .t("A module that will let the users pull in and display applications from apps.usa.gov") . '</p>';
+      break;
+  }
+}
+
+function appsgal_rotator_defaults() {
+	global $base_root;
+	global $base_url;
+	$path = '/'.drupal_get_path('module', 'appsgal_rotator');
+
+	$default = array(
+		'appsapilist' => 'http://apps.usa.gov/apps-gallery/api/registrations.json',
+		'randomize' => 'false',
+		'numrows' => 2,
+		'totalapps' => 14,
+		'iconheight1' => 100,
+		'iconheight2' => 100,
+		'iconwidth1' => 80,
+		'iconwidth2' => 80,
+		'scroll_forward1' => "true",
+		'scroll_forward2' => "false",
+		'auto-play1' => "true",
+		'auto-play2' => "true",
+		'appsperrow1' => 7,
+		'appsperrow2' => 7,
+		'num_visible1' => 7,
+		'num_visible2' => 7,
+		'delay1' => 0,
+		'delay2' => 0,
+		//'offset1' => 0,
+		//'offset2' => 0,
+		'movement_speed1' => 4000,
+		'movement_speed2' => 4000,
+		//'opacity1' => '.5',
+		//'opacity2' => '.5',
+		'borderColor' => "000000",
+		'borderColor1' => "",
+		'borderColor2' => "",
+		'hover_pause1' => "true",
+		'hover_pause2' => "true",
+		'show-nav' => "false",
+		//show-nav1' => "yes",
+		//'show-nav2' => "yes",
+		//'fontFamily1' => "Trebuchet MS', Helvetica, sans-serif",
+		//'fontFamily2' => "Trebuchet MS', Helvetica, sans-serif",
+		'appgal_img1' => $base_url.$path."/images/gsa_logo.jpg",
+		'appgal_link1' => "http://gsa.gov",
+		'appgal_title1' => "GSA",
+		'appgal_img2' => $base_url.$path."/images/cia_logo.png",
+		'appgal_link2' => "http://cia.gov",
+		'appgal_title2' => "CIA",
+		'appgal_img3' => $base_url.$path."/images/fbi_logo.png",
+		'appgal_link3' => "http://fbi.gov",
+		'appgal_title3' => "FBI",
+		'appgal_img4' => $base_url.$path."/images/hhs_logo.jpg",
+		'appgal_link4' => "http://hhs.gov",
+		'appgal_title4' => "HHS",
+		'appgal_img5' => $base_url.$path."/images/cdc_logo.jpg",
+		'appgal_link5' => "http://cdc.gov",
+		'appgal_title5' => "CDC",
+		'appgal_img6' => $base_url.$path."/images/nga_logo.gif",
+		'appgal_link6' => "http://nga.gov",
+		'appgal_title6' => "NGA",
+		'appgal_img7' => $base_url.$path."/images/epa_logo.png",
+		'appgal_link7' => "http://epa.gov",
+		'appgal_title7' => "EPA",
+		'appgal_img8' => $base_url.$path."/images/gsa_logo.jpg",
+		'appgal_link8' => "http://gsa.gov",
+		'appgal_title8' => "GSA",
+		'appgal_img9' => $base_url.$path."/images/cia_logo.png",
+		'appgal_link9' => "http://cia.gov",
+		'appgal_title9' => "CIA",
+		'appgal_img10' => $base_url.$path."/images/fbi_logo.png",
+		'appgal_link10' => "http://fbi.gov",
+		'appgal_title10' => "FBI",
+		'appgal_img11' => $base_url.$path."/images/hhs_logo.jpg",
+		'appgal_link11' => "http://hhs.gov",
+		'appgal_title11' => "HHS",
+		'appgal_img12' => $base_url.$path."/images/cdc_logo.jpg",
+		'appgal_link12' => "http://cdc.gov",
+		'appgal_title12' => "CDC",
+		'appgal_img13' => $base_url.$path."/images/nga_logo.gif",
+		'appgal_link13' => "http://nga.gov",
+		'appgal_title13' => "NGA",
+		'appgal_img14' => $base_url.$path."/images/epa_logo.png",
+		'appgal_link14' => "http://epa.gov",
+		'appgal_title14' => "EPA",
+		);
+	return $default;
+}
+
+function appsgal_rotator_init()
+{
+	//if (arg(0) == 'admin') {
+		//global $page;
+
+    $path = drupal_get_path('module', 'appsgal_rotator');
+    
+    drupal_add_css($path . '/appstyle.css');
+    drupal_add_css($path . '/colorpicker.css');
+
+    drupal_add_js($path . '/colorpicker.js',array('weight' => 10));
+    drupal_add_js($path . '/custom.js',array('weight' => 14));
+    
+    drupal_add_js($path . '/jquery1.7.1.min.js',array('weight' => 11));
+    drupal_add_js('var $jq = jQuery.noConflict();',array('type' => 'inline', 'weight' => 12));
+    drupal_add_js($path . '/aslider.js',array('weight' => 15));
+    
+	if (arg(0) == 'node')
+	{
+		 $nid = arg(1);
+		 $node_in = node_load($nid);
+		 $node_text = @$node_in->body['und'][0]['value'];
+		 if(preg_match('/\[appsgal.*\]/',$node_text))
+		 {
+		 	if(preg_match('/\[appsgal name="([\w+_*\-*]+)"\]/',$node_text,$match))
+			{
+				appsgal_rotator_css_embed($match[1]);
+	    		appsgal_rotator_javascript_embed($match[1]);
+			}
+		 }
+	}  		
+}
+
+function appsgal_rotator_css_embed($rotator)
+{
+	drupal_add_css(appsgal_embed('css',$rotator),
+    array('type' => 'inline', 'weight' => 5, 'cache' => FALSE));
+}
+
+function appsgal_rotator_javascript_embed($rotator)
+{
+	drupal_add_js(appsgal_embed('arrays',$rotator),
+    array('type' => 'inline', 'scope' => 'header', 'weight' => 13, 'cache' => FALSE));
+	drupal_add_js(appsgal_embed('js',$rotator),
+    array('type' => 'inline', 'scope' => 'header', 'weight' => 16, 'cache' => FALSE));
+    //drupal_set_message('js embed called');
+}
+
+function appsgal_rotator_preprocess_html(&$vars) {
+  // Setup IE meta tag to force IE rendering mode
+  $meta_ie_render_engine = array(
+    '#type' => 'html_tag',
+    '#tag' => 'meta',
+    '#attributes' => array(
+      'content' =>  'IE=edge,chrome=1',
+      'http-equiv' => 'X-UA-Compatible',
+    )
+  );
+  
+  // Add header meta tag for IE to head
+  //drupal_add_html_head($meta_ie_render_engine, 'meta_ie_render_engine');
+}
+
+function appsgal_rotator_main_page()
+{
+	$return_main = '';
+	    
+	    $return_main .= '<div class="wrap" style="width:820px;">
+	    <h2>Manage</h2>
+	    <div class="metabox-holder" style="width: 820px; float:left;">
+	     <div class="inside">
+	     <br />
+	     </div>
+	     </div>';
+	//AppsGal rotator Functions
+	    
+	if(@$_REQUEST['add'] == '1')
+	{
+	    $option=$_POST['rotator_name'];
+	    if(!variable_get($_POST['rotator_name']))
+	    {
+	     if($option){
+	            $option = preg_replace('/[^a-z0-9\s]/i', '', $option);  
+	            $option = str_replace(" ", "_", $option);
+	            
+	            $table_name = "appsgal_rotator";
+	            $options = variable_get($option);
+
+	            if($options)
+	            {
+	                $v_message= 'Unable to Add rotator,  different name';
+	            }else{
+	                //$sql = "INSERT INTO " . $table_name . " values ('','".$option."','1');";
+	                //if ($wpdb->query( $sql )){
+	            	 $insert_rotator = db_insert('appsgal_rotator')
+			          ->fields(array(
+			            'rotator_name' => $option,
+			            'active' => 1,
+			          ))
+			          ->execute();
+	            	if ($insert_rotator){
+	                        variable_set($option, appsgal_rotator_defaults());
+	                        $v_message= ' rotator successfully added';
+	                        }
+	                else{
+	                        $v_message= 'Unable to Add rotator, can not insert rotator';
+	                        }
+	                };
+	            }else{
+	                    $v_message= ' Unable to Add rotator';
+	                }
+	    }else{
+	        $v_message= ' Unable to Add rotator, try a different name';
+	    }
+	    $return_main .= '
+	<div class="updated" id="message"><p><strong>'.$v_message.'</strong></p></div>';
+	}
+
+	if(@$_GET['delete'])
+	{
+	    $option=$_GET['delete'];
+	    variable_del($option);
+	    
+	    db_delete('appsgal_rotator')
+		  ->condition('rotator_name', $option)
+		  ->execute();
+
+	$return_main .= '<div class="updated" id="message"><p><strong>rotator Deleted</strong></p></div>';
+	}
+
+	if(@$_GET['deactivate'])  //if deactivate called, get id and set active to 0
+	{
+	    $id=$_GET['deactivate'];
+
+       db_update('appsgal_rotator')
+	    ->fields(array(
+	    'active' => 0,
+	    ))
+	    ->condition('id', $id, '=')
+	    ->execute();
+	 
+	$return_main .= '<div class="updated" id="message"><p><strong>
+	    Appsgal Rotator #'.$id.' Deactivated
+	</strong></p></div>';
+	}
+
+	if(@$_GET['activate'])  // if activate called, get id and set active to 1
+	{
+	    $id=$_GET['activate'];
+	   
+	   db_update('appsgal_rotator')
+	    ->fields(array(
+	    'active' => 1,
+	    ))
+	    ->condition('id', $id, '=')
+	    ->execute();
+
+	 $return_main .= '
+	<div class="updated" id="message"><p><strong>AppsGal Rotator #'.$id.' Activated</strong></p></div>';
+	}
+	$return_main .= '
+	    <table class="widefat" cellspacing="0">
+	        <thead>
+	            <tr>
+	                <th scope="col" id="name" class="manage-column column-name" colspan="5">Table Of AppsGallery Rotators</th>
+	            </tr>
+	            <tr style="background: #efefef;">
+	            <td style="width: 100px;text-align:center;"> ID </td>
+	            <td style="width: 100px;text-align:center;"> rotator Name </td>
+	            <td style="width: 100px;text-align:center;"> Edit </td>
+	            <td style="width: 100px;text-align:center;"> Active </td>
+	            <td style="width: 100px;text-align:center;"> Delete </td>
+	            </tr>
+	            </thead>
+	            <tbody>'.get_appsgal_rotators().'</tbody>
+	        </table>
+	    </div>';
+
+	    return $return_main;
+}
+
+function get_appsgal_rotators()
+{
+	global $base_root;
+    $apps_rotator_data = db_select('appsgal_rotator','agr')
+            ->fields('agr')
+            ->execute()
+            ->fetchAll();
+    $return_rotators = '';
+    if(count($apps_rotator_data) > 0)
+    {
+	    foreach ($apps_rotator_data as $data)
+	    {    
+	        if($data->active == 1)
+	        { $active='<a href="'.url('admin/config/system/appsgal_rotator').'?deactivate='.$data->id.'" class="button">Deactivate</a>';
+	          $disabled = '';
+	        }
+	        else {
+	            $active='<a href="'.url('admin/config/system/appsgal_rotator').'?activate='.$data->id.'" class="button">Activate</a>';
+	            $disabled='disabled="disabled"';
+	            }
+	        
+	       $return_rotators .= '<tr style="height:40px;"><td style="width: 100px;text-align:center;padding: 10px;" >'.$data->id.'</td><td style="width: 100px;text-align:center;padding: 10px;" valign="middle"> '.$data->rotator_name.' </td><td style="width: 100px;text-align:center;padding: 10px;" >
+	       <a href="'.url('admin/config/system/appsgal_rotator/edit',array('query' => array('rotator' => $data->rotator_name))).'" class="button" '.$disabled.'>Edit</a>
+	       </td><td style="width: 100px;text-align:center;padding: 10px;"> '.$active.' </td>
+	       <td style="width: 100px;text-align:center;padding: 10px;" > <a href="'.url('admin/config/system/appsgal_rotator',array('query' => array('delete' => $data->rotator_name))).'" class="button">Delete</a> </td></tr>';
+	         }
+       }
+       else
+       {
+       	$return_rotators .= '<tr><td colspan="5">No Active Rotators at this time.</td></tr>';
+       }
+       $return_rotators .= '
+       <form method="post" action="'.url('admin/config/system/appsgal_rotator').'">
+       <tr style="height:60px;"> <td style="width: 100px;text-align:center;padding: 20px;">NEW</td>
+       <td style="padding: 20px 20px 0;" colspan="2"><input type="text" id="rotator_name" name="rotator_name" size="70" style="border:1px solid black;height:30px;"/>
+       <font style="font-size:10px;"><br>&nbsp;&nbsp;&nbsp;&nbsp;*Do not use spaces, numbers or special characters in the name.</font>
+       </td>
+       <td style="width: 100px;text-align:center;padding: 20px;" colspan="2"><input type="submit" class="button-primary" style="padding: 10px 30px 10px 30px;" value="Add new rotator" />  </td>
+       </tr>
+       <input name="add" value="1" type="hidden">
+       </form>';
+
+       return $return_rotators;
+
+}
+
+function appsgal_rotator_uninstall_form()
+{
+	return "Uninstall here";
+}
+
+function appsgal_rotator_menu() {
+
+	if(function_exists('appsgal_rotator_help')) {
+	  $items = array();
+
+	  $items['admin/config/system/appsgal_rotator'] = array(
+	    'title' => 'AppsGallery Rotators',
+	    'page callback' => 'appsgal_rotator_main_page',
+	    'type' => MENU_NORMAL_ITEM,
+	    'access arguments' => array('access administration pages'),
+	  );
+
+	   $items['admin/config/system/appsgal_rotator/manage'] = array(
+	    'title' => 'Manage AppsGallery Rotators',
+	    'page callback' => 'appsgal_rotator_main_page',
+	    'type'=> MENU_DEFAULT_LOCAL_TASK,
+	    'access arguments' => array('access administration pages'),
+	  );
+	 
+
+	  $items['admin/config/system/appsgal_rotator/edit'] = array(
+	    'title' => 'Edit',
+	    'page callback' => array('appsgal_rotator_edit_page'),
+	    'type'=> MENU_LOCAL_TASK,
+	    'access arguments' => array('access administration pages'),
+	    );
+
+	  $items['admin/config/system/appsgal_rotator/uninstall'] = array(
+	    'title' => 'Uninstall',
+	    'page callback' => array('appsgal_rotator_uninstall_form'),
+	    'type'=> MENU_LOCAL_TASK,
+	    'access arguments' => array('access administration pages'),
+	    );
+
+	  	  $items['admin/settings/appsgal_rotator'] = array(
+	    'title' => 'AppsGallery Rotator',
+	    'page callback' => 'drupal_goto',
+	    'page arguments' => array('admin/config/system/appsgal_rotator'),
+	    'access arguments' => array('access administration pages'),
+	    'weight' => 10,
+	    'type' => MENU_NORMAL_ITEM,
+	   );
+
+	return $items;
+	}
+}
+
+
+function appsgal_rotator_filter_info() {
+
+  $filters['filter_appsgal'] = array(
+    'title' => t('AppsGal Rotator'),
+    'description' => t('Every instance of [appsgal name=""] will render a rotator based on provided name'),
+    'process callback' => '_appsgal_rotator_filter_appsgal_process',
+    'tips callback' => '_appsgal_rotator_filter_appsgal_tips',
+  );
+  return $filters;
+}
+
+function get_appsgal_html($frame,$option)
+{
+	//appsgal_rotator_css_embed($option);
+	//appsgal_rotator_javascript_embed($option);
+
+	$options = variable_get($option);
+	$rotator_code = '<div id="appsgal_'.$frame.'_container">';
+	$apps_displayed = 0;
+
+	for($j=1;$j<=$options['numrows'];$j++)
+	{ 
+		$rotator_code .= '<ul id="appsgalrow'.$j.'" class="appsgal-row">';
+		$display_apps = $apps_displayed;
+		$num_left_to_show = $options['appsperrow'.$j];
+		for($i=$display_apps+1;$i<=($display_apps+$num_left_to_show);$i++)
+		{
+			if($apps_displayed == $options['totalapps'])
+			{
+				$num_left_to_show = (($display_apps + $num_left_to_show + 1) - $i);
+				$i=0;
+				$display_apps = 0;
+				$apps_displayed = 0;
+			}
+			else
+			{
+				$rotator_code .= '
+				<li>
+					<a href="'.@$options['appgal_link'.$i].'" target="_blank" title="'.((@$options['appgal_title'.$i] != '') ? $options['appgal_title'.$i] : 'Click to View App Info').'"><img src="'.@$options['appgal_img'.$i].'" border="0" alt="'.((@$options['appgal_title'.$i] != '') ? $options['appgal_title'.$i] : 'Click to View App Info').'"/></a>
+				</li>';
+				$apps_displayed++;
+			}
+		}
+		if($options['num_visible'.$j] != '')
+			$rotator_code .= '</ul><div class="clearout"></div>';
+	}
+	$rotator_code .= '</div>';
+	return $rotator_code;
+}
+
+function show_appsgal($rotator_name)
+{
+	$path = drupal_get_path('module', 'appsgal_rotator');
+    
+    drupal_add_css($path . '/appstyle.css');
+    drupal_add_css($path . '/colorpicker.css');
+
+    drupal_add_js($path . '/colorpicker.js',array('weight' => 10));
+    drupal_add_js($path . '/custom.js',array('weight' => 13));
+    
+    drupal_add_js($path . '/jquery1.7.1.min.js',array('weight' => 11));
+    drupal_add_js('var $jq = jQuery.noConflict();',array('type' => 'inline', 'weight' => 12));
+    drupal_add_js($path . '/aslider.js',array('weight' => 14));
+    
+	if($rotator_name != "")
+		$option = $rotator_name;
+	else
+		$option = appsgal_rotator_get_rotator_from_url();
+
+	return get_appsgal_html($option,$option);
+}
+
+function _appsgal_rotator_filter_appsgal_process($text, $filter) {
+
+	$return_match = '';
+	if(preg_match('/\[appsgal.*\]/',$text))
+	{
+		// '/[^a-z0-9_\-]/i'
+		if(preg_match('/\[appsgal name="([\w+_*\-*]+)"\]/',$text,$match))
+		{
+			$return_match = ($match[1] != (''||NULL)) ? show_appsgal($match[1]) : "(appsgal-rotator 'name' field cannot be blank)";  //will always show_appsgal and use default slider if a match is not found
+		}
+		else
+			$return_match = "Not a valid rotator name / Field cannot be blank";
+	}
+	return preg_replace('/\[appsgal.*\]/',$return_match,$text);
+}
+
+function _appsgal_rotator_filter_appsgal_tips($filter, $format, $long = FALSE) {
+  return t('[appsgal name=""] is replaced with the AppsGallery Rotator');
+}
+
+function appsgal_embed($type_in = '',$rotator_name)  //embed codes for rotator specific css, js arrays, javascript
+{
+	//drupal_flush_all_caches();
+	$script_embed = '';
+	if($rotator_name != "")
+		$option = $rotator_name;
+	else
+		$option = appsgal_rotator_get_rotator_from_url();
+	
+	$options = variable_get($option);
+	$script_embed_css = '';
+
+	for($z = 1;$z<=$options['numrows'];$z++)
+	{
+		$script_embed_css .= '#appsgalrow'.$z.' .apps-gal-item img{width:'.@$options['iconwidth'.$z].'px !important;height:'.@$options['iconheight'.$z].'px !important;}'.' ';
+		if(@$options['borderColor'.$z] != '')
+			$script_embed_css .= '#app_container'.$z.'{border:1px solid #'.$options['borderColor'.$z].';}'.' ';
+	}
+	$script_embed_css .= ' #appsgal_admin_container {border:1px dashed #'.@$options['borderColor'].' !important;}';
+	
+	if($type_in == 'css')  //if css requested return here
+		return $script_embed_css;
+	else
+	{
+		$array_embed = '';
+		$script_embed_array = 'jQuery(document).ready(function( $ ) {';
+		$script_embed .= $script_embed_array;
+				$total_shown = 0;
+				for($y = 1; $y <= $options['numrows']; $y++)
+				{
+					$total_shown += $options['num_visible'.$y];
+				}
+		$array_embed .= '
+		window.visibleCollection = [';
+			for($h = 1; $h <= $total_shown; $h++)
+			{
+				$array_embed .= '"'.@$options['appgal_link'.$h].'"';
+				$array_embed .= ($h<$total_shown) ? ',' : '';
+			}
+		$array_embed .= '];
+		window.hiddenCollection = [';
+			for($i = $total_shown; $i <= $options['totalapps']; $i++)
+			{
+				$array_embed .= '"'.@$options['appgal_link'.$i].'"';
+				$array_embed .= ($i<$options['totalapps']) ? ',' : '';
+			}
+		$array_embed .= '];
+		window.visibleCollectionImage = [';
+			for($h = 1; $h <= $total_shown; $h++)
+			{
+				$array_embed .= '"'.@$options['appgal_img'.$h].'"';
+				$array_embed .= ($h<$total_shown) ? ',' : '';
+			}
+		$array_embed .= '];
+		window.hiddenCollectionImage = [';
+			for($i = $total_shown; $i <= $options['totalapps']; $i++)
+			{
+				$array_embed .= '"'.@$options['appgal_img'.$i].'"';
+				$array_embed .= ($i<$options['totalapps']) ? ',' : '';
+			}
+		$array_embed .= '];
+		window.visibleCollectionTitle = [';
+			for($h = 1; $h <= $total_shown; $h++)
+			{
+				$array_embed .= '"'.@$options['appgal_title'.$h].'"';
+				$array_embed .= ($h<$total_shown) ? ',' : '';
+			}
+		$array_embed .= '];
+		window.hiddenCollectionTitle = [';
+			for($i = $total_shown; $i <= $options['totalapps']; $i++)
+			{
+				$array_embed .= '"'.@$options['appgal_title'.$i].'"';
+				$array_embed .= ($i<$options['totalapps']) ? ',' : '';
+			}
+		$array_embed .= '];';
+
+		if($type_in == 'arrays')  //if arrays requested return here.
+			return $script_embed_array . $array_embed . '});';
+		else
+		{
+			for($z = 1;$z<=$options['numrows'];$z++)  //appsgal javascript loop
+			{
+				$direction = ($z == 1) ? "forward" : "backwards";
+				
+				if($options['num_visible'.$z] != '' && $options['movement_speed'.$z] != '' && $options['auto-play'.$z] != '')
+				{
+					$script_embed .= '
+				$("#appsgalrow'.$z.'").appsgal({
+					visibleItems: '.$options['num_visible'.$z].',
+					animationSpeed: '.$options['movement_speed'.$z].',
+					autoPlay: '.(($options['auto-play'.$z] == "true") ? "true" : "false").',
+					autoPlaySpeed: '.$options['delay'.$z].',
+					showNav: '.(($options['show-nav'] == "true") ? "true" : "false").',
+					randomize: '.$options['randomize'].',
+					pauseOnHover: '.$options['hover_pause'.$z].',
+					scrollForward: '.$options['scroll_forward'.$z].',
+					divId: \'app_container'.$z.'\',
+					enableResponsiveBreakpoints: false,
+			    	responsiveBreakpoints: { 
+			    		phone: { 
+			    			changePoint:479,
+			    			visibleItems: 1
+			    		},
+			    		portrait: { 
+			    			changePoint:579,
+			    			visibleItems: 2
+			    		},  
+			    		secondportrait: { 
+			    			changePoint:767,
+			    			visibleItems: 3
+			    		}, 
+			    		landscape: { 
+			    			changePoint:867,
+			    			visibleItems: 4
+			    		},
+			    		tablet: { 
+			    			changePoint:959,
+			    			visibleItems: 5
+			    		}
+			    	}
+			    	});';
+				}
+				else
+				{
+					$script_embed .= '$("#appsgalrow'.$z.'").hide();';
+				}
+			}
+			$script_embed .= '});';
+		return $script_embed;
+		}
+	}
+}
+
+function selected( $selected, $current = true, $echo = true ) {
+        return __checked_selected_helper( $selected, $current, $echo, 'selected' );
+}
+function __checked_selected_helper( $helper, $current, $echo, $type ) {
+        if ( (string) $helper === (string) $current )
+                $result = " $type='$type'";
+        else
+                $result = '';
+
+        return $result;
+}
+
+function stripslashes_deep($value) {
+	if ( is_array($value) ) {
+		$value = array_map('stripslashes_deep', $value);
+	} elseif ( is_object($value) ) {
+		$vars = get_object_vars( $value );
+		foreach ($vars as $key=>$data) {
+			$value->{$key} = stripslashes_deep( $data );
+		}
+	} elseif ( is_string( $value ) ) {
+		$value = stripslashes($value);
+	}
+	return $value;
+}
+
+function appsgal_rotator_get_rotator_from_url()
+{
+	$option = '';
+	if(@$_GET["rotator"] && @$_GET["rotator"] != '')
+	{
+		$option=$_GET['rotator'];
+		$apps_rotator_data = db_select('appsgal_rotator','agr')
+	            ->fields('agr')
+	            ->condition('rotator_name',$option)
+	            ->execute()
+	            ->fetchObject();
+        if(!$apps_rotator_data)
+		 	$option='appsgal_rotator_defaults';
+	}else{
+	    $option='appsgal_rotator_defaults';
+	}
+	return $option;
+}
+
+function appsgal_rotator_edit_page()
+{
+
+	$option = appsgal_rotator_get_rotator_from_url();
+
+		if(isset($_POST) && @$_POST['action'] == ('update' || 'reset'))
+		{	
+			if (isset($_POST['appsgal_rotator-reset']) && $_POST['appsgal_rotator-reset'] == 1) { 
+			    if($option == ("" || NULL))
+			    	$option=@$_POST['page_options'];
+			    if($option == ("" || NULL))
+			    {
+			    	$option = "appsgal_rotator_defaults";
+			    	drupal_set_message('default loaded');
+			    }
+			    variable_set($option, appsgal_rotator_defaults());
+			    drupal_flush_all_caches();
+			}
+			else
+			{
+				if($option == ("" || NULL))
+			    	$option=@$_POST['page_options'];
+				if ( isset($_POST[$option]) )
+				{
+					//drupal_set_message('option post set');
+					$value = $_POST[$option];
+				}
+				if ( !is_array($value) )
+				{	
+					//drupal_set_message('not an array');
+					$value = trim($value);
+				}
+				$value = stripslashes_deep($value);
+				//$value = $_POST[$option];
+				variable_set($option,$value);
+				drupal_flush_all_caches();
+			}
+		}
+	appsgal_rotator_css_embed($option);
+	appsgal_rotator_javascript_embed($option);
+
+	$return_edit = '';
+	
+	$return_edit .= '<div class="wrap" style="width:820px;"><div id="icon-options-general" class="icon32"><br /></div>';
+
+	$return_edit .= '<h2>AppsGal Rotator 1.0.1 Edit Rotator Page [ '.$option.' ]</h2>
+	<form id="appsgal_form" method="post" action="">';
+
+	$options = variable_get($option);
+    
+	$return_edit .= '<div class="metabox-holder" style="max-width: 975px; margin:10px;">
+        <div class="postbox">
+        <h3>'.t("General Settings").'</h3>
+            <div id="general" class="inside" style="padding: 10px;">
+            	<div class="inline-div">
+	                 <p>'.t("Number of Rows").':<input type="text" name="'.$option.'[numrows]" value="'.($options['numrows']!=""?$options['numrows']:"1").'" size="3" /></p>
+	                 <p>'.t("Randomize?").':<select name="'.$option.'[randomize]"><option value="true"'.selected('true', $options['randomize']).'>Yes</option><option value="false"'.selected('false', $options['randomize']).'>No</option></select></p>
+            	</div>
+            	<div class="inline-div">';
+    $return_edit .= '<p>'.t("Container Border Color").': #<input id="borderColor" type="text" name="'.$option.'[borderColor]" value="'.$options['borderColor'].'" size="8" />&nbsp;HEX<br><small>(leave blank for none)</small>
+                </p>
+                <p>'.t("Show Nav Arrows?").':<select name="'.$option.'[show-nav]"><option value="true"'.selected('true', $options['show-nav']).'>Yes</option><option value="false"'.selected('false', $options['show-nav']).'>No</option></select></p>';
+
+    $return_edit .= '</div>
+
+    			<input type="hidden" name="'.$option.'[totalapps]" value="'.($options['totalapps']!=""?$options['totalapps']:"7").'">
+    			
+    			<input type="hidden" name="original_rows" value="'.$options['numrows'].'">
+              	<input type="hidden" name="action" value="update" />
+				<input type="hidden" name="page_options" value="'.($option!=""?$option:"appsgal_rotator_defaults").'" />
+                <span class="appsgal_submit"><p><input type="submit" class="submit_update" value="'.t('Save Settings').'" /></p></span>
+            </div>
+        </div>
+    </div>
+    <div class="metabox-holder" style="width: 850px;margin-left:10px;">
+        <div class="postbox">
+        <h3>'.t("Advanced Settings").'<div class="click" id="appsgal_adv_setts" style="float:right;cursor:pointer;">(+/-)</div></h3>
+            <div class="inside" id="boxappsgal_adv_setts" style="padding: 10px;display:none;">';
+
+    $return_edit .= ''.t("AppsGallery Listing API URL").':<br />
+                <input type="text" id="appsgal_api" name="'.$option.'[appsapilist]" value="'.$options['appsapilist'].'" size="62" /><br />
+				<input type="hidden" name="appsgal_api-refresh" value="1" />
+                <p><input type="submit" class="button" value="'.t('Save API Url').'" /><input type="submit" id="submit_refresh" class="button" value="'.t('Load Apps List').'" /></p>
+            </div>
+        </div>
+    </div>
+    <div class="metabox-holder" style="width: 850px;margin-left:10px;">
+        <div class="postbox">
+        <h3>'.t("Available Apps").'<div class="click" id="appsgal_avl_apps" style="float:right;cursor:pointer;">(+/-)</div></h3>
+            <div class="inside" id="boxappsgal_avl_apps" style="padding: 10px;display:none;">';
+
+    $return_edit .= ''.t("AppsGallery Listing API URL").':<br />';
+              	
+              	if(($options['totalapps']) <= 0)
+					$return_edit .= "No Apps Available";
+				else
+				{
+          			
+          			$return_edit .= '<table><thead><tr><td>Link URL</td><td>Image URL</td><td>Title</td><tr></thead><tbody>';
+	          				$base_row = '';
+		              		for($x=1;$x<=$options['totalapps'];$x++)
+		              		{
+		              			$return_edit .= '<tr><td><input name="'.$option.'[appgal_link'.$x.']" type="text" value="'.$options['appgal_link'.$x].'" size="40"></td><td><input name="'.$option.'[appgal_img'.$x.']" type="text" value="'.$options['appgal_img'.$x].'" size="60"></td><td><input name="'.$option.'[appgal_title'.$x.']" type="text" value="'.$options['appgal_title'.$x].'" size="30"></td></tr>';
+		              		}
+              		$return_edit .= '
+              		</tbody>
+              		</table>';
+              	}
+              	$return_edit .= '<br/>';
+              	
+            $return_edit .= '</div>
+        </div>
+    </div>';
+
+    for($i=1;$i<=$options['numrows'];$i++)
+    {
+    $return_edit .= '<div class="metabox-holder" style="width: 850px;margin-left:10px;">
+        <div class="postbox">
+        <h3>Row #'.$i.' '.t("Configuration").'<div class="click" id="appsgal_row'.$i.'" style="float:right;cursor:pointer;">(+/-)</div></h3>
+            <div class="inside" id="boxappsgal_row'.$i.'" style="padding: 10px;display:none;">';
+
+    $return_edit .= '<div class="inline-div">
+	                <p>'.t("Number of Apps").':<input type="text" name="'.$option.'[appsperrow'.$i.']" value="'.($options['appsperrow'.$i] != "" ? $options['appsperrow'.$i] : "7").'" size="3" /></p>
+	                 <p>'.t("Number Visible").':<input type="text" name="'.$option.'[num_visible'.$i.']" value="'.($options['num_visible'.$i] != "" ? $options['num_visible'.$i] : "7").'" size="3" /></p>
+	                <p>'.t("Movement speed").':<input type="text" name="'.$option.'[movement_speed'.$i.']" value="'.($options['movement_speed'.$i] != "" ? $options['movement_speed'.$i] : "4000").'" size="3" />&nbsp;in ms</p>
+	                <p>'.t("Delay").':<input type="text" name="'.$option.'[delay'.$i.']" value="'.($options['delay'.$i] != "" ? $options['delay'.$i] : "0").'" size="3" />&nbsp;in ms</p>
+	                <p>'.t("Scroll Direction").':<select name="'.$option.'[scroll_forward'.$i.']"><option value="true"'.selected('true', $options['scroll_forward'.$i]).'>Forward</option><option value="false" '.selected('false', $options['scroll_forward'.$i]);
+	            if($options['scroll_forward'.$i] == '' && $i%2==0)
+	            	$return_edit .= 'selected';
+	            $return_edit .= '>Backwards</option></select></p>
+            	</div>
+            	<div class="inline-div">
+                <p>'.t("Border Color").': #<input id="borderColor" type="text" name="'.$option.'[borderColor'.$i.']" value="'.($options['borderColor'.$i] != "" ? $options['borderColor'.$i] : "").'" size="8" />&nbsp;HEX
+                </p>
+                <p>'.t("Max Icon Height").':<input type="text" name="'.$option.'[iconheight'.$i.']" value="'.($options['iconheight'.$i] != "" ? $options['iconheight'.$i] : "100").'" size="3" />in px
+                </p>
+                <p>'.t("Max Icon Width").':<input type="text" name="'.$option.'[iconwidth'.$i.']" value="'.($options['iconwidth'.$i] != "" ? $options['iconwidth'.$i] : "80").'" size="3" />in px
+                </p>
+                <p>'.t("Stop on hover").':<select name="'.$option.'[hover_pause'.$i.']"><option value="true" '.selected('true', $options['hover_pause'.$i]).'>Yes</option><option value="false" '.selected('false', $options['hover_pause'.$i]).'>No</option></select>
+	            </p>';
+               
+               	$return_edit .= '<p>'.t("Auto Play").':<select name="'.$option.'[auto-play'.$i.']"><option value="true" '.selected('true', $options['auto-play'.$i]).'>Yes</option><option value="false" '.selected('false', $options['auto-play'.$i]).'>No</option></select></p>
+                </div>
+                <span class="appsgal_submit"><p><input type="submit" class="submit_update" value="'.t('Save Settings').'" /></p></span>
+            </div>
+        </div>
+    </div>';
+	}
+	$return_edit .= '</form>';
+		$return_edit .= get_appsgal_html('admin',$option);
+		$return_edit .= '<form method="post" style="clear:both;">
+			<input type="hidden" name="action" value="reset" />
+			<input type="hidden" name="appsgal_rotator-reset" value="1" />
+			<p><input type="submit" class="submit_reset" onclick="return confirm(\'Are you sure you want to reset to default settings?\')" value="'.t('Reset to Defaults').'" /></p>
+		</form>';
+/*
+		<div id="target">
+		  Click here
+		</div>
+		<div id="target2">
+		</div>
+		<div id="target3">
+		</div>
+*/
+
+	return $return_edit;
+}

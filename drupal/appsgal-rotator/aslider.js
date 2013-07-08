@@ -37,7 +37,8 @@
 	    			visibleItems: 6
 	    		}
         	}
-        }, options);     
+        }, options);
+  
         
 		/******************************
 		Private Variables
@@ -63,7 +64,6 @@
         			methods.appendHTML();
         			methods.setEventHandlers();      			
         			methods.initializeItems();
-					
 				});
 			},			
 			
@@ -165,7 +165,9 @@
 						}
 					 	});
 					}
-					else{//console.log('autoplay | no delay');
+					else
+					{
+						console.log('autoplay | no delay');
 					}
 					
 				});					
@@ -182,6 +184,7 @@
 					$jq(object).on({
 						mouseenter: function () {
 							canNavigate = false;
+							//console.log(object[0].id);
 							$jq(object).stop(true,false);
 						}, 
 						mouseleave: function () {
@@ -202,7 +205,6 @@
 						}
 					}, settings.autoPlaySpeed);
 				}
-				
 			},
 			
 			setResponsiveEvents: function() {
@@ -250,7 +252,7 @@
 
 				if(canNavigate == true || force == true) {
 					canNavigate = false;
-
+					console.log('scrolling left and force is '+force);
 					var listParent = object.parent();
 					var innerWidth = listParent.width();
 					
@@ -264,56 +266,39 @@
 	    			initialScroll = false;
 
 					var childSet = object.children();
-					
+
 					if(settings.randomize)
 					{
 						if((typeof childSet.eq(settings.visibleItems+1)[0].firstChild.href != undefined) && (typeof childSet.eq(0)[0].firstChild.href != undefined))
-						{	
-							var rand_app = Math.floor(Math.random() * hiddenCollection.length);		
-							if($jq.inArray(childSet.eq(0)[0].firstElementChild.href,visibleCollection))
+						{			
+							if($jq.inArray(childSet.eq(0)[0].firstChild.href,visibleCollection))
 							{
-								if(rand_app >= 0 && hiddenCollection.length > 0)
-								{
-									childSet.eq(0)[0].innerHTML = '<a href="'+hiddenCollection[rand_app]+'" target="_blank" title="'+hiddenCollectionTitle[rand_app]+'"><img src="'+hiddenCollectionImage[rand_app]+'" border="0" alt="'+hiddenCollectionTitle[rand_app]+'"/></a>';
-									visibleCollection.push(hiddenCollection[rand_app]);
-									visibleCollectionImage.push(hiddenCollectionImage[rand_app]);
-									visibleCollectionTitle.push(hiddenCollectionTitle[rand_app]);
-									hiddenCollection.splice(rand_app,1);
-									hiddenCollectionImage.splice(rand_app,1);
-									hiddenCollectionTitle.splice(rand_app,1);
-								}
+								var rand_app = Math.floor(Math.random() * hiddenCollection.length);
+								childSet.eq(0)[0].innerHTML = '<a href="'+hiddenCollection[rand_app]+'" target="_blank" title="'+hiddenCollectionTitle[rand_app]+'"><img src="'+hiddenCollectionImage[rand_app]+'" border="0" alt="'+hiddenCollectionTitle[rand_app]+'"/></a>';
+								
+								visibleCollection.push(hiddenCollection[rand_app]);
+								visibleCollectionImage.push(hiddenCollectionImage[rand_app]);
+								visibleCollectionTitle.push(hiddenCollectionTitle[rand_app]);
+								hiddenCollection.splice(rand_app,1);
+								hiddenCollectionImage.splice(rand_app,1);
+								hiddenCollectionTitle.splice(rand_app,1);
 							}
 
-							if($jq.inArray(childSet.eq(settings.visibleItems+1)[0].firstElementChild.href,visibleCollection))
-							{	
-								var this_app = $jq.inArray(childSet.eq(settings.visibleItems+1)[0].firstElementChild.href,visibleCollection);
-
-								if(rand_app >= 0 && hiddenCollection.length > 0)
+							if($jq.inArray(childSet.eq(settings.visibleItems+1)[0].firstChild.href,visibleCollection))
+							{
+								var this_app = $jq.inArray(childSet.eq(settings.visibleItems+1)[0].firstChild.href,visibleCollection)
+								
+								if (this_app != -1)  //make sure app is in visible array before switching
 								{
-									if (this_app != -1)  //make sure app is in visible array before switching
-									{
-										hiddenCollection.push(visibleCollection[this_app]);
-										hiddenCollectionImage.push(visibleCollectionImage[this_app]);
-										hiddenCollectionTitle.push(visibleCollectionTitle[this_app]);
-										visibleCollection.splice(this_app,1);
-										visibleCollectionImage.splice(this_app,1);
-										visibleCollectionTitle.splice(this_app,1);
-										//console.log('first of scrolleft hidden');
-									}
-									else
-									{
-										hiddenCollection.push(visibleCollection[visibleCollection.length-1]);
-										hiddenCollectionImage.push(visibleCollectionImage[visibleCollection.length-1]);
-										hiddenCollectionTitle.push(visibleCollectionTitle[visibleCollection.length-1]);
-										visibleCollection.splice(visibleCollection.length-1,1);
-										visibleCollectionImage.splice(visibleCollection.length-1,1);
-										visibleCollectionTitle.splice(visibleCollection.length-1,1);
-									}
+									hiddenCollection.push(visibleCollection[this_app]);
+									hiddenCollectionImage.push(visibleCollectionImage[this_app]);
+									hiddenCollectionTitle.push(visibleCollectionTitle[this_app]);
+									visibleCollection.splice(this_app,1);
+									visibleCollectionImage.splice(this_app,1);
+									visibleCollectionTitle.splice(this_app,1);
 								}
 							}
 						}
-						//console.log('hidden: '+hiddenCollection.length+' - '+hiddenCollection);
-						//console.log('visible: '+visibleCollection.length+ ' - '+visibleCollection);
 					}
 					ease_type = settings.autoPlaySpeed > 0 ? 'swing' : 'linear';
 					animationSpeed = settings.animationSpeed;
@@ -349,9 +334,10 @@
 				
 				if(canNavigate == true || force == true) {
 					canNavigate = false;	
-
+					console.log('scrolling right and force is '+force);
 					var listParent = object.parent();
 					var innerWidth = listParent.width();
+					
 					itemsWidth = (innerWidth)/itemsVisible;
 					
 					if(object.position().left < -(itemsWidth*2) && initialScroll == false) //if 0 element is more than two image widths below 0, reset to 1 less than zero
@@ -366,47 +352,30 @@
 					{
 						if((typeof childSet.eq(settings.visibleItems+2)[0].firstChild.href !== undefined) && (typeof childSet.eq(0)[0].firstChild.href !== undefined))
 						{	
-							var rand_app = Math.floor(Math.random() * hiddenCollection.length)
-							if($jq.inArray(childSet.eq(settings.visibleItems+2)[0].firstElementChild.href,visibleCollection)) //if # of visible+2 (next to scroll in) is already visible 
+							if($jq.inArray(childSet.eq(settings.visibleItems+2)[0].firstChild.href,visibleCollection)) //if # of visible+2 (next to scroll in) is already visible 
 							{
-								//console.log(childSet.eq(0)[0].firstElementChild.href);
-								//console.log('CHECK: '+childSet.eq(settings.visibleItems+2)[0].firstElementChild.href);
-								if(rand_app >= 0 && hiddenCollection.length > 0)
-								{
-									childSet.eq(settings.visibleItems+2)[0].innerHTML = '<a href="'+hiddenCollection[rand_app]+'" target="_blank" title="'+hiddenCollectionTitle[rand_app]+'"><img src="'+hiddenCollectionImage[rand_app]+'" border="0" alt="'+hiddenCollectionTitle[rand_app]+'"/></a>';
-
-									visibleCollection.push(hiddenCollection[rand_app]);  //add to visible array
-									visibleCollectionImage.push(hiddenCollectionImage[rand_app]);
-									visibleCollectionTitle.push(hiddenCollectionTitle[rand_app]);
-									hiddenCollection.splice(rand_app,1);  //remove from hidden array
-									hiddenCollectionImage.splice(rand_app,1);
-									hiddenCollectionTitle.splice(rand_app,1);
-								}
+								var rand_app = Math.floor(Math.random() * hiddenCollection.length)
+								
+								childSet.eq(settings.visibleItems+2)[0].innerHTML = '<a href="'+hiddenCollection[rand_app]+'" target="_blank" title="'+hiddenCollectionTitle[rand_app]+'"><img src="'+hiddenCollectionImage[rand_app]+'" border="0" alt="'+hiddenCollectionTitle[rand_app]+'"/></a>';
+								visibleCollection.push(hiddenCollection[rand_app]);  //add to visible array
+								visibleCollectionImage.push(hiddenCollectionImage[rand_app]);
+								visibleCollectionTitle.push(hiddenCollectionTitle[rand_app]);
+								hiddenCollection.splice(rand_app,1);  //remove from hidden array
+								hiddenCollectionImage.splice(rand_app,1);
+								hiddenCollectionTitle.splice(rand_app,1);
 							}
-							if($jq.inArray(childSet.eq(0)[0].firstElementChild.href,visibleCollection)) //if 0 element is in visible
+							if($jq.inArray(childSet.eq(0)[0].firstChild.href,visibleCollection)) //if 0 element is in visible
 							{
-								var this_app = $jq.inArray(childSet.eq(0)[0].firstElementChild.href,visibleCollection);
-
-								if(rand_app >= 0 && hiddenCollection.length > 0)
+								var this_app = $jq.inArray(childSet.eq(0)[0].firstChild.href,visibleCollection);
+								
+								if (this_app != -1)
 								{
-									if (this_app != -1)
-									{
-										hiddenCollection.push(visibleCollection[this_app]);  //add to hidden array
-										hiddenCollectionImage.push(visibleCollectionImage[this_app]);
-										hiddenCollectionTitle.push(visibleCollectionTitle[this_app]);
-										visibleCollection.splice(this_app,1);  //remove from visible array
-										visibleCollectionImage.splice(this_app,1);
-										visibleCollectionTitle.splice(this_app,1);
-									}
-									else
-									{
-										hiddenCollection.push(visibleCollection[0]);
-										hiddenCollectionImage.push(visibleCollectionImage[0]);
-										hiddenCollectionTitle.push(visibleCollectionTitle[0]);
-										visibleCollection.splice(0,1);
-										visibleCollectionImage.splice(0,1);
-										visibleCollectionTitle.splice(0,1);
-									}
+									hiddenCollection.push(visibleCollection[this_app]);  //add to hidden array
+									hiddenCollectionImage.push(visibleCollectionImage[this_app]);
+									hiddenCollectionTitle.push(visibleCollectionTitle[this_app]);
+									visibleCollection.splice(this_app,1);  //remove from visible array
+									visibleCollectionImage.splice(this_app,1);
+									visibleCollectionTitle.splice(this_app,1);
 								}
 							}
 						}
@@ -424,7 +393,6 @@
 					{
 						animationWidth = itemsWidth; //Animate the full width of the item
 					}
-
 					object.animate({
 							'left' : "-=" + animationWidth
 						},
@@ -466,7 +434,7 @@
         } else if (typeof options === 'object' || !options) { 	// $("#element").appsgal({ option: 1, option:2 });
             return methods.init.apply(this);  
         } else {
-            $jq.error( 'Method "' +  method + '" does not exist in this plugin!');
+            $jq.error( 'Method "' +  method + '" does not exist in plugin!');
         }        
 };
 
