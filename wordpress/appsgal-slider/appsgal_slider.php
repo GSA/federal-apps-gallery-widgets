@@ -124,22 +124,17 @@ if ( is_admin() ){
 			'num_visible2' => 7,
 			'delay1' => 0,
 			'delay2' => 0,
-			//'offset1' => 0,
-			//'offset2' => 0,
+			
 			'movement_speed1' => 4000,
 			'movement_speed2' => 4000,
-			//'opacity1' => '.5',
-			//'opacity2' => '.5',
+			
 			'borderColor' => "000000",
 			'borderColor1' => "",
 			'borderColor2' => "",
 			'hover_pause1' => "true",
 			'hover_pause2' => "true",
 			'show-nav' => "false",
-			//show-nav1' => "yes",
-			//'show-nav2' => "yes",
-			//'fontFamily1' => "Trebuchet MS', Helvetica, sans-serif",
-			//'fontFamily2' => "Trebuchet MS', Helvetica, sans-serif",
+			
 			'appgal_img1' => plugins_url('images/gsa_logo.jpg',__FILE__),
 			'appgal_link1' => "http://gsa.gov/",
 			'appgal_title1' => "GSA",
@@ -185,12 +180,7 @@ if ( is_admin() ){
 			);
 		return $default;
 	}
-	/*
-	if (isset($_GET['page']) && $_GET['page'] == 'add-appslider' ) {
-	    add_action('admin_init', 'appsgal_slider_admin_scripts');
-	    add_action('admin_print_styles', 'appsgal_slider_admin_styles');
-	}
-	*/
+
 	if(isset($_POST['uninstallappslider']) && $_POST['uninstallappslider']){
 	    appsgal_slider_plugin_uninstall();
 	}
