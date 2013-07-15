@@ -11,11 +11,25 @@ Drupal
 - Custom Drupal Module - One click install
 - Custom *shortcode* developed for usage on any page / post
 
-![drp-appsgal-admin](https://f.cloud.github.com/assets/4965704/764321/a47d3ed8-e80e-11e2-88a8-67be1f5a9019.png)
+![gensettings](https://f.cloud.github.com/assets/4965696/797685/89f02462-ed50-11e2-8091-369e13b300e3.png)
+General Apps Gallery Slider Settings
+
+![advsettings](https://f.cloud.github.com/assets/4965696/797686/89ed90ee-ed50-11e2-8a49-3a1d334b8b24.png)
+Advanced Settings - Pull in data (.json) from urls
+
+![availableapps](https://f.cloud.github.com/assets/4965696/797684/89f1f5da-ed50-11e2-84a0-882a7efd9524.png)
+Available Apps - List / edit available applications to slide
+
+![rowconfig](https://f.cloud.github.com/assets/4965696/797687/948013d8-ed50-11e2-88d1-fa058caa44e4.png)
+Row Configuration - Easily customize each row individually
 
 Wordpress
 --------------
 - Custom Wordpress Plugin - One click install
 - Drop Shortcode on any page / post for instant functionality
 
-![wp-appsgal-admin](https://f.cloud.github.com/assets/4965704/764306/6513994a-e80e-11e2-863e-56ee25ff26f6.png)
+![gen-settings](https://f.cloud.github.com/assets/4965696/797692/ade03b6e-ed50-11e2-86c8-059398539946.png)
+
+![adv-avail](https://f.cloud.github.com/assets/4965696/797690/add9f09c-ed50-11e2-9339-f9a701bde6df.png)
+
+![row-config](https://f.cloud.github.com/assets/4965696/797691/addcb5f2-ed50-11e2-9933-3d71e4aa52ef.png)
