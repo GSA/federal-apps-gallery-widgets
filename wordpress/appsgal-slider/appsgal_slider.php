@@ -400,7 +400,8 @@ function appsgal_slider_admin_page()
             <div id="general" class="inside" style="padding: 10px;">
             	<div class="inline-div">
 	                 <p><?php _e("Number of Rows", 'appsgal_slider'); ?>:<input type="text" name="<?php echo $option; ?>[numrows]" value="<?php echo $options['numrows'] ?>" size="3" /></p>
-	                 <p><?php _e("Randomize?", 'appsgal_slider'); ?>:<select name="<?php echo $option. '[randomize]'; ?>"><option value="true" <?php selected('true', $options['randomize']); ?>>Yes</option><option value="false" <?php selected('false', $options['randomize']); ?>>No</option></select></p>
+	                 <?php /* <p><?php _e("Randomize?", 'appsgal_slider'); ?>:<select name="<?php echo $option. '[randomize]'; ?>"><option value="true" <?php selected('true', $options['randomize']); ?>>Yes</option><option value="false" <?php selected('false', $options['randomize']); ?>>No</option></select></p>*/ ?>
+	                 <input type="hidden" name="<?php echo $option. '[randomize]'; ?>" value="false">
             	</div>
             	<div class="inline-div">
                 <p><?php _e("Container Border Color", 'appsgal_slider'); ?>:<input id="borderColor" type="text" name="<?php echo $option; ?>[borderColor]" value="<?php echo $options['borderColor'] ?>" size="8" />&nbsp;HEX<br><small>(leave blank for none)</small>
